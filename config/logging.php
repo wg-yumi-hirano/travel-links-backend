@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use Monolog\Handler\NullHandler;
 use Monolog\Handler\StreamHandler;
@@ -51,13 +51,20 @@ return [
     */
 
     'channels' => [
-
+        // スタック
         'stack' => [
             'driver' => 'stack',
             'channels' => explode(',', (string) env('LOG_STACK', 'single')),
             'ignore_exceptions' => false,
         ],
 
+        'stack_error' => [
+            'driver' => 'stack',
+            'channels' => ['stderr', 'single'],
+            'ignore_exceptions' => false,
+        ],
+
+        // 出力先
         'single' => [
             'driver' => 'single',
             'path' => storage_path('logs/laravel.log'),
@@ -105,6 +112,17 @@ return [
             'processors' => [PsrLogMessageProcessor::class],
         ],
 
+        'stdout' => [
+            'driver' => 'monolog',
+            'level' => env('LOG_LEVEL', 'debug'),
+            'handler' => Monolog\Handler\StreamHandler::class,
+            'with' => [
+                'stream' => 'php://stdout',
+            ],
+            'formatter' => env('LOG_STDOUT_FORMATTER'),
+            'processors' => [PsrLogMessageProcessor::class],
+        ],
+
         'syslog' => [
             'driver' => 'syslog',
             'level' => env('LOG_LEVEL', 'debug'),
@@ -126,7 +144,6 @@ return [
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],
-
     ],
 
 ];
