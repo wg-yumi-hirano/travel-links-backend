@@ -5,11 +5,10 @@ namespace App\Http\Controllers\Auth;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
-use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Models\User;
 
-class RegisterController extends Controller
+class RegisterController extends \App\Http\Controllers\Controller
 {
     public function __invoke(RegisterRequest $request)
     {
@@ -18,8 +17,6 @@ class RegisterController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        Auth::login($user); // Cookieベースでログイン
-
-        return response()->json(['message' => 'Registered and logged in'], 201);
+        return $this->success(__('project.register_success'));
     }
 }

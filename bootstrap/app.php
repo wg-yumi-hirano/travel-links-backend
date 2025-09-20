@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use App\Exceptions\ExceptionConfigurator;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -18,7 +19,6 @@ return Application::configure(basePath: dirname(__DIR__))
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\Session\Middleware\StartSession::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
-            \App\Http\Middleware\Debug::class, // デバッグログ出力用に追加
             \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ];
@@ -26,5 +26,5 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->priority($m);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        ExceptionConfigurator::configure($exceptions);
     })->create();

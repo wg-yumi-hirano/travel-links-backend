@@ -19,7 +19,9 @@ class RegisterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'login_id' => 'required|string|unique:users,login_id',
+            //TODO 利用可能な文字を制限する（全角禁止）
+            'login_id' => 'required|string|min:8|unique:users,login_id',
+            //TODO 使用しなければならない文字を定義する
             'password' => 'required|string|min:8|confirmed',
         ];
     }

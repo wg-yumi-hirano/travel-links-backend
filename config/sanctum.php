@@ -81,4 +81,7 @@ return [
         'validate_csrf_token' => Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
     ],
 
+    // CSRF保護用エンドポイントのパスを変更
+    'prefix' => 'api'
+
 ];
