@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'previous' => '&laquo; Previous',
-    'next' => 'Next &raquo;',
+    'page' => 'ページ番号',
+    'per_page' => '表示件数',
 
 ];

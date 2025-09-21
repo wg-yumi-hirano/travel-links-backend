@@ -12,5 +12,7 @@ return [
     'validation_error' => 'バリデーションエラー',
     'unexpected_error' => '予期しないエラーが発生しました。',
 
+    'search_success' => '検索結果を取得しました。',
+
     'user_show' => 'ユーザー情報'
 ];

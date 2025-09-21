@@ -3,22 +3,50 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
+use App\Http\Requests\SearchRequest;
+use App\Http\Resources\SearchResource;
+use App\Models\Site;
 
 class SearchController extends Controller
 {
-    public function index(Request $request)
+    public function index(SearchRequest $request)
     {
-        $dummyData = [
-            [
-                'id' => 1,
-                'name' => 'ダミーサイト',
-                'thumbnailUrl' => 'https://google.com',
-                'description' => 'ダミー説明',
-                'priceMin' => 0,
-                'priceMax' => 1234,
-            ],
-        ];
+        $perPage = (int) $request->input('per_page', Config::get('project.search_per_page', 10));
+        $keyword = $request->input('keyword');
+        $sort = $request->input('sort');
 
-        return $this->success('検索結果を取得しました', $dummyData);
+        $query = Site::query()->whereNull('deleted_at');
+
+        if (!empty($keyword)) {
+            $query->where(function ($q) use ($keyword) {
+                $q->where('name', 'like', "%{$keyword}%")
+                  ->orWhere('address', 'like', "%{$keyword}%")
+                  ->orWhere('description', 'like', "%{$keyword}%");
+            });
+        }
+
+        switch ($sort) {
+            case 'price_min_asc':
+                $query->orderBy('price_min', 'asc');
+                break;
+            case 'updated_at_desc':
+                $query->orderBy('updated_at', 'desc');
+                break;
+            default:
+                $query->orderByDesc('id');
+        }
+
+        $sites = $query->paginate($perPage);
+
+        return $this->success(__('project.search_success'), [
+            'data' => SearchResource::collection($sites),
+            'pagination' => [
+                'current_page' => $sites->currentPage(),
+                'last_page' => $sites->lastPage(),
+                'per_page' => $sites->perPage(),
+                'total' => $sites->total(),
+            ],
+        ]);
     }
 }
