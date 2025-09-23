@@ -19,8 +19,14 @@ class AuthController extends \App\Http\Controllers\Controller
     {
         $limit = Config::get('project.login_throttle_limit', 5);
         $decay = Config::get('project.login_throttle_decay_second', 10);
-        $key = 'login:' . Str::lower($request->input('login_id')) . '|' . $request->ip();
+        $key = $this->generateRateLimitKey($request);
         if (RateLimiter::tooManyAttempts($key, $limit)) {
+            Log::warning('Too many attempts to login', [
+                'email' => $request->input('email'),
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]);
+
             return $this->error(
                 Lang::get('project.auth_too_many_attempts', ['seconds' => $decay]),
                 null,
@@ -31,17 +37,6 @@ class AuthController extends \App\Http\Controllers\Controller
         RateLimiter::hit($key, $decay);
         $credentials = $request->validated();
         if (!Auth::attempt($credentials)) {
-            Log::warning('Login failed', [
-                'login_id' => $credentials['login_id'] ?? null,
-                'ip' => $request->ip(),
-                'user_agent' => $request->userAgent(),
-            ]);
-
-            $user = User::where('login_id', $credentials['login_id'])->first();
-            if ($user) {
-                $user->increment('login_failed_count');
-            }
-
             return $this->error(
                 __('project.auth_failed'),
                 null,
@@ -57,11 +52,18 @@ class AuthController extends \App\Http\Controllers\Controller
 
     public function logout(Request $request)
     {
-        Auth::logout();
+        $request->user()->tokens()->delete();  // トークン削除
 
-        $request->session()->invalidate();         // セッションIDを無効化
-        $request->session()->regenerateToken();    // CSRFトークンを再生成
+        Auth::guard('api')->logout();
+
+        $request->session()->invalidate();  // セッションIDを無効化
+        $request->session()->regenerateToken();  // CSRFトークンを再生成
 
         return $this->success(__('project.auth_logout_success'));
+    }
+
+    private function generateRateLimitKey(LoginRequest $request)
+    {
+        return Str::lower($request->input('email')). '|' . $request->ip();
     }
 }

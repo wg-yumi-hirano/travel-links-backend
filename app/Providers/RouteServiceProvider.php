@@ -19,7 +19,7 @@ class RouteServiceProvider extends ServiceProvider
     {
         // ログイン試行制限
         RateLimiter::for('login', function (Request $request) {
-            $key = 'login:' . Str::lower($request->input('login_id')) . '|' . $request->ip();
+            $key = 'login:' . Str::lower($request->input('email')) . '|' . $request->ip();
 
             return Limit::perMinute(config('project.login_throttle_limit', 5))
                         ->by($key);
@@ -27,7 +27,7 @@ class RouteServiceProvider extends ServiceProvider
 
         // ユーザー登録試行制限
         RateLimiter::for('register', function (Request $request) {
-            $key = 'login:' . Str::lower($request->input('login_id')) . '|' . $request->ip();
+            $key = 'login:' . Str::lower($request->input('email')) . '|' . $request->ip();
 
             return Limit::perMinute(config('project.register_throttle_limit', 3))
                         ->by($key);

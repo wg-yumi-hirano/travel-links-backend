@@ -13,7 +13,7 @@ class RegisterController extends \App\Http\Controllers\Controller
     public function __invoke(RegisterRequest $request)
     {
         $user = User::create([
-            'login_id' => $request->login_id,
+            'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
 
