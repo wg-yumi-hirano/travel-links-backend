@@ -14,7 +14,6 @@ class SearchResource extends JsonResource
             'name' => $this->name,
             'url' => $this->url,
             'address' => $this->address,
-            'thumbnail' => $this->thumbnail,
             'description' => $this->description,
             'price_min' => $this->price_min,
             'price_max' => $this->price_max,

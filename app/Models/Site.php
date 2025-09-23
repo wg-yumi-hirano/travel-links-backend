@@ -16,7 +16,7 @@ class Site extends Model
         'name',
         'url',
         'address',
-        'thumbnail',
+        'thumbnail_id',
         'description',
         'price_max',
         'price_min',
@@ -26,4 +26,16 @@ class Site extends Model
         'updated_at' => 'datetime',
         'created_at' => 'datetime',
     ];
+
+    protected static function booted(): void
+    {
+        static::deleting(function (Site $site) {
+            $site->thumbnail()->delete();
+        });
+    }
+
+    public function thumbnail(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Image::class, 'id', 'thumbnail_id');
+    }
 }

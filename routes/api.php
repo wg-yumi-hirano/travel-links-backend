@@ -9,6 +9,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\UserController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\SiteController;
 use App\Models\User;
 
 // 認証関連
@@ -17,6 +18,7 @@ Route::middleware(['throttle:register'])->post('/register', RegisterController::
 
 // 認証不要
 Route::get('/search', [SearchController::class, 'index']);
+Route::get('/site/{site}/thumbnail', [SiteController::class, 'thumbnail']);
 
 // 認証付きルート（セッションベース）
 Route::middleware('auth:sanctum')->group(function () {

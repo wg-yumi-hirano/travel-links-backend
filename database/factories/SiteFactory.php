@@ -3,6 +3,8 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Arr;
+use App\Models\Image;
 use App\Models\Site;
 
 class SiteFactory extends Factory
@@ -15,7 +17,7 @@ class SiteFactory extends Factory
             'name' => $this->faker->words(2, true),
             'url' => 'https://google.com',
             'address' => '東京都' . $this->faker->words(10, true),
-            'thumbnail' => $this->faker->imageUrl(),
+            'thumbnail_id' => Arr::random([null, Image::factory()]),
             'description' => $this->faker->paragraphs(2, true),
             'price_max' => $this->faker->numberBetween(10000, 30000),
             'price_min' => $this->faker->numberBetween(5000, 10000),

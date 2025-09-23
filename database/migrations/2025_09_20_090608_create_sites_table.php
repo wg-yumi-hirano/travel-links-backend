@@ -13,7 +13,7 @@ return new class extends Migration
             $table->string('name')->nullable(false)->index();
             $table->string('url')->nullable(false)->index();
             $table->string('address')->nullable(false)->index();
-            $table->string('thumbnail');
+            $table->foreignId('thumbnail_id')->nullable()->constrained('images');
             $table->text('description');
             $table->unsignedInteger('price_max');
             $table->unsignedInteger('price_min');

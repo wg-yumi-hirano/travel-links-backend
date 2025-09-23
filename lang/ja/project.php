@@ -8,4 +8,6 @@ return [
     'rate_limit_error' => 'リクエストが制限されました。しばらくしてから再試行してください。',
     'validation_error' => 'バリデーションエラー',
     'unexpected_error' => '予期しないエラーが発生しました。',
+
+    'image_not_found' => '画像が見つかりませんでした。',
 ];
