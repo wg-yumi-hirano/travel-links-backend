@@ -17,6 +17,6 @@ class RegisterController extends \App\Http\Controllers\Controller
             'password' => Hash::make($request->password),
         ]);
 
-        return $this->success(__('project.register_success'));
+        return $this->success();
     }
 }

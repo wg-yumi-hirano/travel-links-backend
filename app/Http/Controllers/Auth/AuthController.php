@@ -47,7 +47,7 @@ class AuthController extends \App\Http\Controllers\Controller
         RateLimiter::clear($key);
         $request->session()->regenerate();
 
-        return $this->success(__('project.auth_login_success'), Auth::user());
+        return $this->success(Auth::user());
     }
 
     public function logout(Request $request)
@@ -59,7 +59,7 @@ class AuthController extends \App\Http\Controllers\Controller
         $request->session()->invalidate();  // セッションIDを無効化
         $request->session()->regenerateToken();  // CSRFトークンを再生成
 
-        return $this->success(__('project.auth_logout_success'));
+        return $this->success();
     }
 
     private function generateRateLimitKey(LoginRequest $request)

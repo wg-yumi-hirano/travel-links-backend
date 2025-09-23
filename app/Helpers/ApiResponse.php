@@ -4,14 +4,10 @@ namespace App\Helpers;
 
 class ApiResponse
 {
-    public static function success(string $message, $data = null, int $status = 200)
+    public static function success($data = null, int $status = 200)
     {
         return response()->json(
-            [
-                'message' => $message,
-                'data' => $data,
-                'errors' => null,
-            ],
+            $data,
             $status,
             [],
             JSON_UNESCAPED_UNICODE
@@ -23,7 +19,6 @@ class ApiResponse
         return response()->json(
             [
                 'message' => $message,
-                'data' => null,
                 'errors' => $errors,
             ],
             $status,

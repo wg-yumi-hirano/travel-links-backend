@@ -12,9 +12,9 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    protected function success(string $message, $data = null, int $status = 200)
+    protected function success($data = null, int $status = 200)
     {
-        return ApiResponse::success($message, $data, $status);
+        return ApiResponse::success($data, $status);
     }
 
     protected function error(string $message, $errors = null, int $status = 400)

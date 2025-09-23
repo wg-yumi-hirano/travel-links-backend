@@ -19,17 +19,17 @@ class SearchTest extends TestCase
 
         $response = $this->getJson('/api/search?per_page=10');
         $response->assertStatus(200)
-                 ->assertJsonPath('data.pagination.current_page', 1)
-                 ->assertJsonPath('data.pagination.last_page', 2)
-                 ->assertJsonPath('data.pagination.per_page', 10)
-                 ->assertJsonPath('data.pagination.total', 20);
+                 ->assertJsonPath('pagination.current_page', 1)
+                 ->assertJsonPath('pagination.last_page', 2)
+                 ->assertJsonPath('pagination.per_page', 10)
+                 ->assertJsonPath('pagination.total', 20);
         
         $response = $this->getJson('/api/search?per_page=10&page=2');
         $response->assertStatus(200)
-                 ->assertJsonPath('data.pagination.current_page', 2)
-                 ->assertJsonPath('data.pagination.last_page', 2)
-                 ->assertJsonPath('data.pagination.per_page', 10)
-                 ->assertJsonPath('data.pagination.total', 20);
+                 ->assertJsonPath('pagination.current_page', 2)
+                 ->assertJsonPath('pagination.last_page', 2)
+                 ->assertJsonPath('pagination.per_page', 10)
+                 ->assertJsonPath('pagination.total', 20);
     }
 
     public function testPositive_keyword()
@@ -42,10 +42,10 @@ class SearchTest extends TestCase
         $response = $this->getJson('/api/search?per_page=1&keyword=ワー');
 
         $response->assertStatus(200)
-                 ->assertJsonPath('data.pagination.current_page', 1)
-                 ->assertJsonPath('data.pagination.last_page', 3)
-                 ->assertJsonPath('data.pagination.per_page', 1)
-                 ->assertJsonPath('data.pagination.total', 3);
+                 ->assertJsonPath('pagination.current_page', 1)
+                 ->assertJsonPath('pagination.last_page', 3)
+                 ->assertJsonPath('pagination.per_page', 1)
+                 ->assertJsonPath('pagination.total', 3);
     }
 
     public function testPositive_sort()
@@ -56,12 +56,12 @@ class SearchTest extends TestCase
 
         $response = $this->getJson('/api/search?sort=price_min_asc');
         $response->assertStatus(200);
-        $prices = collect($response->json('data.data'))->pluck('price_min')->all();
+        $prices = collect($response->json('data'))->pluck('price_min')->all();
         $this->assertEquals([1000, 2000, 3000], $prices);
 
         $response = $this->getJson('/api/search?sort=updated_at_desc');
         $response->assertStatus(200);
-        $timestamps = collect($response->json('data.data'))->pluck('updated_at')->map(fn($t) => Carbon::parse($t)->format('Y-m-d'))->all();
+        $timestamps = collect($response->json('data'))->pluck('updated_at')->map(fn($t) => Carbon::parse($t)->format('Y-m-d'))->all();
         $this->assertEquals(['2025-01-01', '2024-01-01', '2023-01-01'], $timestamps);
     }
 

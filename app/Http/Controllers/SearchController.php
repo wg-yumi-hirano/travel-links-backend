@@ -39,7 +39,7 @@ class SearchController extends Controller
 
         $sites = $query->paginate($perPage);
 
-        return $this->success(__('project.search_success'), [
+        return $this->success([
             'data' => SearchResource::collection($sites),
             'pagination' => [
                 'current_page' => $sites->currentPage(),
