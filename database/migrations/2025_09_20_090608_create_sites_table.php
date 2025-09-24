@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('sites', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->string('name')->nullable(false)->index();
             $table->string('url')->nullable(false)->index();
             $table->string('address')->nullable(false)->index();

@@ -34,6 +34,11 @@ class Site extends Model
         });
     }
 
+    public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function thumbnail(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(Image::class, 'id', 'thumbnail_id');

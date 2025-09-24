@@ -13,8 +13,14 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call([
-            SiteSeeder::class,
+        $user = User::create([
+            'email' => 'sample@example.com',
+            'email_verified_at' => now(),
+            'password' => \Illuminate\Support\Facades\Hash::make('samplepassword'),
+            'remember_token' => \Illuminate\Support\Str::random(10),
         ]);
+        SiteSeeder::$user = $user;
+
+        $this->call(SiteSeeder::class);
     }
 }

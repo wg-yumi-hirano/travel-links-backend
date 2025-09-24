@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Arr;
 use App\Models\Image;
 use App\Models\Site;
+use App\Models\User;
 
 class SiteFactory extends Factory
 {
@@ -14,6 +15,7 @@ class SiteFactory extends Factory
     public function definition(): array
     {
         return [
+            'user_id' => User::factory(),
             'name' => $this->faker->words(2, true),
             'url' => 'https://google.com',
             'address' => '東京都' . $this->faker->words(10, true),
