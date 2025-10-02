@@ -12,12 +12,18 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // See: https://readouble.com/laravel/12.x/ja/csrf.html
+        $middleware->validateCsrfTokens(except: [
+            // 認証済みを前提とした API は除外
+            'api/user',
+            'api/user/*'
+        ]);
+
         // See: https://laravel.com/docs/12.x/middleware
         $m = [
             \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
             \App\Http\Middleware\EncryptCookies::class,
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
-            \Illuminate\Session\Middleware\StartSession::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,

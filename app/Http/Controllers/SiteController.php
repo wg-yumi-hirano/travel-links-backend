@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use App\Models\Site;
 
 class SiteController extends Controller
 {
-    public function thumbnail(Site $site)
+    public function thumbnail(Site $site): JsonResponse
     {
         $image = $site->thumbnail;
 

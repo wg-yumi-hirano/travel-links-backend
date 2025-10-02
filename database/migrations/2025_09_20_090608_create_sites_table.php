@@ -16,8 +16,8 @@ return new class extends Migration
             $table->string('address')->nullable(false)->index();
             $table->foreignId('thumbnail_id')->nullable()->constrained('images');
             $table->text('description');
-            $table->unsignedInteger('price_max');
-            $table->unsignedInteger('price_min');
+            $table->unsignedInteger('price_min')->nullable(false);
+            $table->unsignedInteger('price_max')->nullable(false);
             $table->softDeletes();
             $table->timestamps();
         });

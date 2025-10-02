@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use App\Http\Requests\SearchRequest;
@@ -10,7 +11,7 @@ use App\Models\Site;
 
 class SearchController extends Controller
 {
-    public function index(SearchRequest $request)
+    public function viewAny(SearchRequest $request): JsonResponse
     {
         $perPage = (int) $request->input('per_page', Config::get('project.search_per_page', 10));
         $keyword = $request->input('keyword');

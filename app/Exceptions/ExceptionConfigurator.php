@@ -3,20 +3,30 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Configuration\Exceptions;
-use Throwable;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpFoundation\Response;
+use Throwable;
 use App\Helpers\ApiResponse;
 
 class ExceptionConfigurator
 {
     public static function configure(Exceptions $exceptions): void
     {
-        // レンダリング処理
         $exceptions->renderable(function (\Illuminate\Auth\AuthenticationException $e, Request $request) {
             return ApiResponse::error(
                 __('auth.unauthenticated'),
+                null,
+                Response::HTTP_UNAUTHORIZED
+            );
+        });
+
+        $exceptions->renderable(function (\Illuminate\Auth\Access\AuthorizationException $e, Request $request) {
+            // frontend 経由であれば発生しないはず
+            $this->warning('Unauthorized', $e, $request);
+
+            return ApiResponse::error(
+                __('auth.unauthorized'),
                 null,
                 Response::HTTP_FORBIDDEN
             );
@@ -39,14 +49,32 @@ class ExceptionConfigurator
         });
 
         $exceptions->renderable(function (Throwable $e, Request $request) {
+            Log::error('Unexpected error', [
+                'exception' => $e,
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'code' => $e->getCode(),
+            ]);
+
             return ApiResponse::error(
                 __('project.unexpected_error'),
-                [
-                    'exception' => class_basename($e),
-                    'message' => $e->getMessage(),
-                ],
+                null,
                 Response::HTTP_INTERNAL_SERVER_ERROR
             );
         });
+    }
+
+    public static function warning(string $message, Throwable $e, Request $request) {
+        Log::warning($message, [
+            'message' => $e->getMessage(),
+            'user_id' => $user?->id,
+            'user_email' => $user?->email,
+            'ip' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'method' => $request->method(),
+            'url' => $request->fullUrl(),
+            'input' => $request->except(['password', 'token']), // センシティブな情報を除外
+            'referer' => $request->headers->get('referer'),
+        ]);
     }
 }

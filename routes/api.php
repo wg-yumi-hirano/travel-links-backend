@@ -8,6 +8,7 @@ use Illuminate\Validation\ValidationException;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\UserController;
+use App\Http\Controllers\Auth\UserSiteController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SiteController;
 use App\Models\User;
@@ -17,14 +18,16 @@ Route::middleware(['throttle:login'])->post('/login', [AuthController::class, 'l
 Route::middleware(['throttle:register'])->post('/register', RegisterController::class);
 
 // 認証不要
-Route::get('/search', [SearchController::class, 'index']);
+Route::get('/search', [SearchController::class, 'viewAny']);
 Route::get('/site/{site}/thumbnail', [SiteController::class, 'thumbnail']);
 
 // 認証付きルート（セッションベース）
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [UserController::class, 'show']);
-    // // 他の保護されたAPI
-    // Route::get('/dashboard', [UserController::class, 'dashboard']);
-});
 
+    Route::get('/user/sites', [UserSiteController::class, 'viewAny']);
+    Route::post('/user/sites', [UserSiteController::class, 'create']);
+    Route::put('/user/sites/{site}', [UserSiteController::class, 'update']);
+    Route::delete('/user/sites/{site}', [UserSiteController::class, 'delete']);
+});

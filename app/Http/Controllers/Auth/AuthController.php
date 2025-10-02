@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
@@ -15,7 +16,7 @@ use App\Models\User;
 
 class AuthController extends \App\Http\Controllers\Controller
 {
-    public function login(LoginRequest $request)
+    public function login(LoginRequest $request): JsonResponse
     {
         $limit = Config::get('project.login_throttle_limit', 5);
         $decay = Config::get('project.login_throttle_decay_second', 10);
@@ -50,7 +51,7 @@ class AuthController extends \App\Http\Controllers\Controller
         return $this->success(Auth::user());
     }
 
-    public function logout(Request $request)
+    public function logout(Request $request): JsonResponse
     {
         $request->user()->tokens()->delete();  // トークン削除
 

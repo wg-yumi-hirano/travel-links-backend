@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('password');
             $table->rememberToken();
             $table->unsignedInteger('login_failed_count')->default(0);
+            $table->softDeletes();
             $table->timestamps();
         });
 

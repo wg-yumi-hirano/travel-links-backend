@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('images', function (Blueprint $table) {
             $table->id();
             $table->mediumText('base64')->nullable(false);  // 訳16MBまで
+            $table->softDeletes();
             $table->timestamps();
         });
     }

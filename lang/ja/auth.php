@@ -17,5 +17,6 @@ return [
     'password' => 'The provided password is incorrect.',
     'throttle' => 'ログイン試行回数が上限に達しました。:seconds 秒後に再試行してください。',
     'unauthenticated' => '未認証です。',
+    'unauthorized' => 'この操作を実行する権限がありません。',
 
 ];
