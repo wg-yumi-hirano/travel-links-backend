@@ -4,17 +4,24 @@ namespace App\Http\Resources\Auth;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Services\ImageService;
 
 class UserSiteResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+        $base64 = null;
+        if ($this->thumbnail) {
+            $imageService = app(ImageService::class);
+            $base64 = $imageService->encode($this->thumbnail);
+        }
+
         return [
             'id' => $this->id,
             'name' => $this->name,
             'url' => $this->url,
             'address' => $this->address,
-            'thumbnail' => $this->thumbnail?->base64 ?? null,
+            'thumbnail' => $base64,
             'description' => $this->description,
             'price_max' => $this->price_max,
             'price_min' => $this->price_min,

@@ -21,10 +21,10 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // See: https://laravel.com/docs/12.x/middleware
         $m = [
+            \App\Http\Middleware\LogRequestInfo::class, // 独自クラス
             \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
             \App\Http\Middleware\EncryptCookies::class,
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
-            \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ];

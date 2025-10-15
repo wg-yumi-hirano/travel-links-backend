@@ -25,7 +25,6 @@ Route::get('/site/{site}/thumbnail', [SiteController::class, 'thumbnail']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [UserController::class, 'show']);
-
     Route::get('/user/sites', [UserSiteController::class, 'viewAny']);
     Route::post('/user/sites', [UserSiteController::class, 'create']);
     Route::put('/user/sites/{site}', [UserSiteController::class, 'update']);

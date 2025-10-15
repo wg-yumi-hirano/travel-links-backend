@@ -23,7 +23,18 @@ class ExceptionConfigurator
 
         $exceptions->renderable(function (\Illuminate\Auth\Access\AuthorizationException $e, Request $request) {
             // frontend 経由であれば発生しないはず
-            $this->warning('Unauthorized', $e, $request);
+            self::warning('Unauthorized', $e, $request);
+
+            return ApiResponse::error(
+                __('auth.unauthorized'),
+                null,
+                Response::HTTP_FORBIDDEN
+            );
+        });
+
+        $exceptions->renderable(function (\Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException $e, Request $request) {
+            // frontend 経由であれば発生しないはず
+            self::warning('Unauthorized', $e, $request);
 
             return ApiResponse::error(
                 __('auth.unauthorized'),
@@ -67,8 +78,8 @@ class ExceptionConfigurator
     public static function warning(string $message, Throwable $e, Request $request) {
         Log::warning($message, [
             'message' => $e->getMessage(),
-            'user_id' => $user?->id,
-            'user_email' => $user?->email,
+            'user_id' => $request->user()?->id,
+            'user_email' => $request->user()?->email,
             'ip' => $request->ip(),
             'user_agent' => $request->userAgent(),
             'method' => $request->method(),

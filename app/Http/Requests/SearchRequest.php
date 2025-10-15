@@ -3,14 +3,10 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\BaseRequest;
 
-class SearchRequest extends FormRequest
+class SearchRequest extends BaseRequest
 {
-    public function authorize(): bool
-    {
-        return true; // 認可は不要
-    }
-
     public function rules(): array
     {
         return [
@@ -26,8 +22,8 @@ class SearchRequest extends FormRequest
         return [
             'page' => __('pagination.page'),
             'per_page' => __('pagination.per_page'),
-            'keyword' => __('search.keyword'),
-            'sort' => __('search.sort'),
+            'keyword' => __('project.keyword'),
+            'sort' => __('project.sort'),
         ];
     }
 }

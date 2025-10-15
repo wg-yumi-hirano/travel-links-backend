@@ -3,14 +3,10 @@
 namespace App\Http\Requests\Auth;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\BaseRequest;
 
-class RegisterRequest extends FormRequest
+class RegisterRequest extends BaseRequest
 {
-    public function authorize(): bool
-    {
-        return true; // 認証不要で誰でも使える
-    }
-
     /**
      * Get the validation rules that apply to the request.
      *

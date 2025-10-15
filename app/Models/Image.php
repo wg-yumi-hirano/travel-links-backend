@@ -13,6 +13,7 @@ class Image extends Model
     use HasFactory;
 
     protected $fillable = [
-        'base64',
+        'mime_type',
+        'binary',
     ];
 }

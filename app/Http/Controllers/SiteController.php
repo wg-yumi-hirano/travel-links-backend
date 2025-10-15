@@ -5,14 +5,15 @@ namespace App\Http\Controllers;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use App\Models\Site;
+use App\Services\ImageService;
 
 class SiteController extends Controller
 {
-    public function thumbnail(Site $site): JsonResponse
+    public function thumbnail(Site $site, ImageService $service): JsonResponse
     {
         $image = $site->thumbnail;
 
-        if (! $image) {
+        if (! $image ) {
             return $this->error(
                 __('project.image_not_found'),
                 null,
@@ -21,7 +22,7 @@ class SiteController extends Controller
         }
 
         return response()->json([
-            'base64' => $image->base64,
+            'base64' => $service->encode($image),
         ]);
     }
 }
