@@ -21,16 +21,26 @@ class RouteServiceProvider extends ServiceProvider
         RateLimiter::for('login', function (Request $request) {
             $key = 'login:' . Str::lower($request->input('email')) . '|' . $request->ip();
 
-            return Limit::perMinute(config('project.login_throttle_limit', 5))
+            return Limit::perMinute(config('project.login.throttle_limit', 5))
                         ->by($key);
         });
 
         // ユーザー登録試行制限
         RateLimiter::for('register', function (Request $request) {
-            $key = 'login:' . Str::lower($request->input('email')) . '|' . $request->ip();
+            $key = 'register:' . Str::lower($request->input('email')) . '|' . $request->ip();
 
-            return Limit::perMinute(config('project.register_throttle_limit', 3))
+            return Limit::perMinute(config('project.register.throttle_limit', 3))
                         ->by($key);
+        });
+
+        // メール確認試行制限
+        RateLimiter::for('email-resend', function (Request $request) {
+            $key = 'verification:' . Str::lower($request->input('email')) . '|' . $request->ip();
+
+            return Limit::perMinutes(
+                config('project.verification.throttle_decay_minute', 1),
+                config('project.verification.throttle_limit', 6)
+            )->by($key);
         });
     }
 }

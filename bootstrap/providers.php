@@ -1,6 +1,7 @@
-<?php declare(strict_types=1);
+<?php
 
 return [
     App\Providers\AppServiceProvider::class,
+    App\Providers\AuthServiceProvider::class,
     App\Providers\RouteServiceProvider::class,
 ];

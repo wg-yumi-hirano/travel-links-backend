@@ -12,7 +12,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        Gate::policy(\App\Models\Site::class, \App\Policies\UserSitePolicy::class);
     }
 
     /**
@@ -20,6 +20,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Gate::policy(\App\Models\Site::class, \App\Policies\UserSitePolicy::class);
+        //
     }
 }

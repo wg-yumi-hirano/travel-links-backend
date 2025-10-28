@@ -18,8 +18,8 @@ class AuthController extends \App\Http\Controllers\Controller
 {
     public function login(LoginRequest $request): JsonResponse
     {
-        $limit = Config::get('project.login_throttle_limit', 5);
-        $decay = Config::get('project.login_throttle_decay_second', 10);
+        $limit = Config::get('project.login.throttle_limit', 5);
+        $decay = Config::get('project.login.throttle_decay_second', 10);
         $key = $this->generateRateLimitKey($request);
         if (RateLimiter::tooManyAttempts($key, $limit)) {
             Log::warning('Too many attempts to login', [
@@ -45,10 +45,22 @@ class AuthController extends \App\Http\Controllers\Controller
             );
         }
 
+        $user = Auth::user();
+
+        if (!$user->hasVerifiedEmail()) {
+            Auth::logout();
+
+            return $this->error(
+                __('project.email_not_verified'),
+                null,
+                Response::HTTP_FORBIDDEN
+            );
+        }
+
         RateLimiter::clear($key);
         $request->session()->regenerate();
 
-        return $this->success(Auth::user());
+        return $this->success($user);
     }
 
     public function logout(Request $request): JsonResponse

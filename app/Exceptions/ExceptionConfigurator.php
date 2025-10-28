@@ -43,6 +43,26 @@ class ExceptionConfigurator
             );
         });
 
+        $exceptions->renderable(function (\Symfony\Component\Mailer\Exception\TransportException $e, Request $request) {
+            self::error('Failed to send email', $e);
+
+            return ApiResponse::error(
+                __('project.send_email_error'),
+                null,
+                Response::HTTP_SERVICE_UNAVAILABLE
+            );
+        });
+
+        $exceptions->renderable(function (\Illuminate\Routing\Exceptions\InvalidSignatureException $e, Request $request) {
+            self::warning('Failed to verify email', $e, $request);
+
+            return ApiResponse::error(
+                __('project.failed_verification_email'),
+                null,
+                Response::HTTP_BAD_REQUEST
+            );
+        });
+
         $exceptions->renderable(function (\Illuminate\Http\Exceptions\ThrottleRequestsException $e, Request $request) {
             return ApiResponse::error(
                 __('project.rate_limit_error'),
@@ -60,12 +80,7 @@ class ExceptionConfigurator
         });
 
         $exceptions->renderable(function (Throwable $e, Request $request) {
-            Log::error('Unexpected error', [
-                'exception' => $e,
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-                'code' => $e->getCode(),
-            ]);
+            self::error('Unexpected error', $e);
 
             return ApiResponse::error(
                 __('project.unexpected_error'),
@@ -75,7 +90,7 @@ class ExceptionConfigurator
         });
     }
 
-    public static function warning(string $message, Throwable $e, Request $request) {
+    private static function warning(string $message, Throwable $e, Request $request) {
         Log::warning($message, [
             'message' => $e->getMessage(),
             'user_id' => $request->user()?->id,
@@ -86,6 +101,15 @@ class ExceptionConfigurator
             'url' => $request->fullUrl(),
             'input' => $request->except(['password', 'token']), // センシティブな情報を除外
             'referer' => $request->headers->get('referer'),
+        ]);
+    }
+
+    private static function error(string $message, Throwable $e) {
+        Log::error($message, [
+            'exception' => $e,
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+            'code' => $e->getCode(),
         ]);
     }
 }

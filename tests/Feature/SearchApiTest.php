@@ -2,14 +2,14 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Carbon;
 use App\Models\Site;
 
 class SearchApiTest extends BaseTestCase
 {
-    use DatabaseTransactions;
+    use RefreshDatabase;
 
     /* 正常系 */
     public function testPositive_pagination()

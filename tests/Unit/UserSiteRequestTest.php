@@ -28,7 +28,7 @@ class UserSiteRequestTest extends TestCase
     public function testPositive_set_max_values()
     {
         // ジャストなサイズを設定するのは難しい
-        $image = Image::factory()->create($this->generateImage(211 * 1024));
+        $image = Image::factory()->create($this->generateImage(210 * 1024));
         $imageService = new ImageService();
         $base64 = $imageService->encode($image);
 
