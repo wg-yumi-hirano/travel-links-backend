@@ -24,7 +24,7 @@ class VerifyEmail extends BaseVerifyEmail
         parse_str($parsed['query'] ?? '', $queryParams);
 
         // URL を frontend 用に変換
-        $frontendUrl = env('MAIL_FRONTEND_URL', '');
+        $frontendUrl = env('MAIL_VERIFY_EMAIL_URL', '');
         $frontendVerificationUrl = $frontendUrl . '?' . http_build_query([
             'id' => $queryParams['id'] ?? $notifiable->getKey(),
             'hash' => $queryParams['hash'] ?? sha1($notifiable->getEmailForVerification()),

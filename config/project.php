@@ -14,6 +14,10 @@ return [
         'throttle_limit' => 6,
         'throttle_decay_minute' => 1,
     ],
+    'reset_password' => [
+        'throttle_limit' => 6,
+        'throttle_decay_minute' => 1,
+    ],
     'search_per_page' => 10,
     'command' => [
         'purge_before_hours' => 24

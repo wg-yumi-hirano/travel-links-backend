@@ -4,19 +4,20 @@ namespace App\Http\Requests\Auth;
 
 use App\Http\Requests\BaseRequest;
 
-class RegisterRequest extends BaseRequest
+class PasswordResetRequest extends BaseRequest
 {
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
-            'email' => 'required|email|unique:users,email',
+            'token' => 'required',
+            'email' => 'required|email',
             //TODO 使用しなければならない文字を定義する
             'password' => 'required|string|min:8|confirmed',
         ];
+    }
+
+    public function authorize(): bool
+    {
+        return true;
     }
 }

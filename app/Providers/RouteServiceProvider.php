@@ -42,5 +42,15 @@ class RouteServiceProvider extends ServiceProvider
                 config('project.verification.throttle_limit', 6)
             )->by($key);
         });
+
+        // パスワードリセット試行制限
+        RateLimiter::for('reset-password-send', function (Request $request) {
+            $key = 'reset_password:' . Str::lower($request->input('email')) . '|' . $request->ip();
+
+            return Limit::perMinutes(
+                config('project.reset_password.throttle_decay_minute', 1),
+                config('project.reset_password.throttle_limit', 6)
+            )->by($key);
+        });
     }
 }
