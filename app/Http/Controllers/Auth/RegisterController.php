@@ -18,8 +18,6 @@ class RegisterController extends \App\Http\Controllers\Controller
     public function __invoke(RegisterRequest $request)
     {
         DB::transaction(function () use ($request) {
-            DB::beginTransaction();
-
             $user = User::create([
                 'email' => $request->email,
                 'password' => Hash::make($request->password)

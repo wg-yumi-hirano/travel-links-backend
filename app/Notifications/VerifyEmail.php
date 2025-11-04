@@ -33,6 +33,7 @@ class VerifyEmail extends BaseVerifyEmail
         ]);
 
         return (new MailMessage)
+            ->subject(__('project.verify_email.title'))
             ->view('emails.verify', ['actionUrl' => $frontendVerificationUrl]);
     }
 }

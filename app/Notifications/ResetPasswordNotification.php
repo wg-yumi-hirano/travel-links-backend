@@ -41,6 +41,7 @@ class ResetPasswordNotification extends Notification
         ]);
 
         return (new MailMessage)
+            ->subject(__('project.reset_password.title'))
             ->view('emails.reset-password', [
                 'actionUrl' => $frontendResetUrl,
                 'user' => $notifiable,
