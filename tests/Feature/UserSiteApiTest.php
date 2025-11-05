@@ -15,6 +15,8 @@ class UserSiteApiTest extends BaseTestCase
     public function testPositive_get_user_sites_returns_empty_list()
     {
         $user = User::factory()->create();
+        Site::factory()->create(['user_id' => $user->id])->delete(); // 削除済み
+        Site::factory()->create(); // 他人のサイト
 
         $res = $this->getAuthApi('/api/user/sites', $user);
 

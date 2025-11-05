@@ -15,6 +15,7 @@ class SearchApiTest extends BaseTestCase
     public function testPositive_pagination()
     {
         Site::factory()->count(20)->create();
+        Site::factory()->create()->delete(); // 削除済み
 
         $response = $this->getApi('/api/search?per_page=10');
         $response->assertStatus(200)
@@ -39,12 +40,19 @@ class SearchApiTest extends BaseTestCase
         Site::factory()->create(['name' => 'キー', 'address' => 'キー']);
 
         $response = $this->getApi('/api/search?per_page=1&keyword=ワー');
-
         $response->assertStatus(200)
                  ->assertJsonPath('pagination.current_page', 1)
                  ->assertJsonPath('pagination.last_page', 3)
                  ->assertJsonPath('pagination.per_page', 1)
                  ->assertJsonPath('pagination.total', 3);
+        
+        $response = $this->getApi('/api/search?per_page=1&keyword=ワー あ');
+        $response->assertStatus(200)
+                 ->assertJsonCount(0, 'data')
+                 ->assertJsonPath('pagination.current_page', 1)
+                 ->assertJsonPath('pagination.last_page', 1)
+                 ->assertJsonPath('pagination.per_page', 1)
+                 ->assertJsonPath('pagination.total', 0);
     }
 
     public function testPositive_sort()

@@ -18,7 +18,6 @@ class UserSiteController extends \App\Http\Controllers\Controller
     {
         $sites = Site::query()
             ->where('user_id', Auth::id())
-            ->whereNull('deleted_at')
             ->with('thumbnail')
             ->orderBy('id', 'asc')
             ->get();

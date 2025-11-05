@@ -17,14 +17,18 @@ class SearchController extends Controller
         $keyword = $request->input('keyword');
         $sort = $request->input('sort');
 
-        $query = Site::query()->whereNull('deleted_at');
+        $query = Site::query();
 
         if (!empty($keyword)) {
-            $query->where(function ($q) use ($keyword) {
-                $q->where('name', 'like', "%{$keyword}%")
-                  ->orWhere('address', 'like', "%{$keyword}%")
-                  ->orWhere('description', 'like', "%{$keyword}%");
-            });
+            $split = preg_split('/\s+/', $keyword);
+            $list = array_filter($split, fn($word) => $word !== '');
+            foreach ($list as $k) {
+                $query->where(function ($q) use ($k) {
+                    $q->where('name', 'like', "%{$k}%")
+                    ->orWhere('address', 'like', "%{$k}%")
+                    ->orWhere('description', 'like', "%{$k}%");
+                });
+            }
         }
 
         switch ($sort) {
