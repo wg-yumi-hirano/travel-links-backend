@@ -50,4 +50,7 @@ return [
     'description' => '説明',
     'price_min' => '最低価格（円）',
     'price_max' => '最高価格（円）',
+
+    'budget_min' => '予算下限（円）',
+    'budget_max' => '予算上限（円）',
 ];

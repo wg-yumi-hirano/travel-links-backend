@@ -15,6 +15,8 @@ class SearchController extends Controller
     {
         $perPage = (int) $request->input('per_page', Config::get('project.search_per_page', 10));
         $keyword = $request->input('keyword');
+        $budgetMin = $request->input('budget_min');
+        $budgetMax = $request->input('budget_max');
         $sort = $request->input('sort');
 
         $query = Site::query();
@@ -29,6 +31,13 @@ class SearchController extends Controller
                     ->orWhere('description', 'like', "%{$k}%");
                 });
             }
+        }
+
+        if (!empty($budgetMin)) {
+            $query->where('price_max', '>=', $budgetMin);
+        }
+        if (!empty($budgetMax)) {
+            $query->where('price_min', '<=', $budgetMax);
         }
 
         switch ($sort) {

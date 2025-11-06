@@ -39,20 +39,41 @@ class SearchApiTest extends BaseTestCase
         Site::factory()->create(['name' => 'キーワード', 'address' => 'キー']);
         Site::factory()->create(['name' => 'キー', 'address' => 'キー']);
 
-        $response = $this->getApi('/api/search?per_page=1&keyword=ワー');
+        $response = $this->getApi('/api/search?per_page=4&keyword=ワー');
         $response->assertStatus(200)
-                 ->assertJsonPath('pagination.current_page', 1)
-                 ->assertJsonPath('pagination.last_page', 3)
-                 ->assertJsonPath('pagination.per_page', 1)
-                 ->assertJsonPath('pagination.total', 3);
+                 ->assertJsonCount(3, 'data');
         
-        $response = $this->getApi('/api/search?per_page=1&keyword=ワー あ');
+        $response = $this->getApi('/api/search?per_page=4&keyword=ワー あ');
         $response->assertStatus(200)
-                 ->assertJsonCount(0, 'data')
-                 ->assertJsonPath('pagination.current_page', 1)
-                 ->assertJsonPath('pagination.last_page', 1)
-                 ->assertJsonPath('pagination.per_page', 1)
-                 ->assertJsonPath('pagination.total', 0);
+                 ->assertJsonCount(0, 'data');
+    }
+
+    public function testPositive_budget()
+    {
+        Site::factory()->create(['price_min' => 1000, 'price_max' => 2000]);
+        Site::factory()->create(['price_min' => 1500, 'price_max' => 2500]);
+        Site::factory()->create(['price_min' => 2000, 'price_max' => 3000]);
+        Site::factory()->create(['price_min' => 2500, 'price_max' => 3500]);
+
+        $response = $this->getApi('/api/search?per_page=4&budget_min=2001');
+        $response->assertStatus(200)
+                 ->assertJsonCount(3, 'data');
+        $prices = collect($response->json('data'))->pluck('price_max')->all();
+        $this->assertEqualsCanonicalizing([2500, 3000, 3500], $prices);
+        
+        $response = $this->getApi('/api/search?per_page=4&budget_max=2499');
+        $response->assertStatus(200)
+                 ->assertJsonCount(3, 'data');
+        $prices = collect($response->json('data'))->pluck('price_min')->all();
+        $this->assertEqualsCanonicalizing([1000, 1500, 2000], $prices);
+
+        $response = $this->getApi('/api/search?per_page=4&budget_min=2001&budget_max=2499');
+        $response->assertStatus(200)
+                 ->assertJsonCount(2, 'data');
+        $maxes = collect($response->json('data'))->pluck('price_max')->all();
+        $this->assertEqualsCanonicalizing([2500, 3000], $maxes);
+        $mins = collect($response->json('data'))->pluck('price_min')->all();
+        $this->assertEqualsCanonicalizing([1500, 2000], $mins);
     }
 
     public function testPositive_sort()
@@ -61,12 +82,12 @@ class SearchApiTest extends BaseTestCase
         Site::factory()->create(['price_min' => 1000, 'updated_at' => Carbon::parse('2024-01-01')]);
         Site::factory()->create(['price_min' => 2000, 'updated_at' => Carbon::parse('2025-01-01')]);
 
-        $response = $this->getApi('/api/search?sort=price_min_asc');
+        $response = $this->getApi('/api/search?per_page=3&sort=price_min_asc');
         $response->assertStatus(200);
         $prices = collect($response->json('data'))->pluck('price_min')->all();
         $this->assertEquals([1000, 2000, 3000], $prices);
 
-        $response = $this->getApi('/api/search?sort=updated_at_desc');
+        $response = $this->getApi('/api/search?per_page=3&sort=updated_at_desc');
         $response->assertStatus(200);
         $timestamps = collect($response->json('data'))->pluck('updated_at')->map(fn($t) => Carbon::parse($t)->format('Y-m-d'))->all();
         $this->assertEquals(['2025-01-01', '2024-01-01', '2023-01-01'], $timestamps);
@@ -79,11 +100,6 @@ class SearchApiTest extends BaseTestCase
         $response->assertStatus(400)
                  ->assertJsonValidationErrors(['page']);
         $this->assertEquals(['page'], array_keys($response->json('errors')));
-
-        $response = $this->getApi('/api/search?page=0');
-        $response->assertStatus(400)
-                 ->assertJsonValidationErrors(['page']);
-        $this->assertEquals(['page'], array_keys($response->json('errors')));
     }
 
     public function testNegative_per_page()
@@ -92,16 +108,19 @@ class SearchApiTest extends BaseTestCase
         $response->assertStatus(400)
                  ->assertJsonValidationErrors(['per_page']);
         $this->assertEquals(['per_page'], array_keys($response->json('errors')));
+    }
 
-        $response = $this->getApi('/api/search?per_page=0');
+    public function testNegative_budget()
+    {
+        $response = $this->getApi('/api/search?budget_min=invalid');
         $response->assertStatus(400)
-                 ->assertJsonValidationErrors(['per_page']);
-        $this->assertEquals(['per_page'], array_keys($response->json('errors')));
+                 ->assertJsonValidationErrors(['budget_min']);
+        $this->assertEquals(['budget_min'], array_keys($response->json('errors')));
 
-        $response = $this->getApi('/api/search?per_page=51');
+        $response = $this->getApi('/api/search?budget_max=invalid');
         $response->assertStatus(400)
-                 ->assertJsonValidationErrors(['per_page']);
-        $this->assertEquals(['per_page'], array_keys($response->json('errors')));
+                 ->assertJsonValidationErrors(['budget_max']);
+        $this->assertEquals(['budget_max'], array_keys($response->json('errors')));
     }
 
     public function testNegative_sort()

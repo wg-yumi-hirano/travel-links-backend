@@ -32,7 +32,6 @@ class UserSiteRequestTest extends TestCase
         $imageService = new ImageService();
         $base64 = $imageService->encode($image);
 
-        $request = new UserSiteRequest();
         $validator = $this->createValidator([
             'name' => str_repeat('あ', 100),
             'url' => 'https://example.com/' . str_repeat('a', 8000 - Str::length('https://example.com/')),
@@ -57,39 +56,36 @@ class UserSiteRequestTest extends TestCase
             'price_min' => 1,
             'price_max' => 1,
         ];
-        $request = new UserSiteRequest();
 
         $parameters['thumbnail'] = 'data:image/jpeg;base64,';
-        $validator = $this->createValidator($parameters, $request->rules());
+        $validator = $this->createValidator($parameters);
         $this->assertTrue($validator->passes());
 
         $parameters['thumbnail'] = 'data:image/png;base64,';
-        $validator = $this->createValidator($parameters, $request->rules());
+        $validator = $this->createValidator($parameters);
         $this->assertTrue($validator->passes());
 
         $parameters['thumbnail'] = 'data:image/webp;base64,';
-        $validator = $this->createValidator($parameters, $request->rules());
+        $validator = $this->createValidator($parameters);
         $this->assertTrue($validator->passes());
     }
 
     public function testNegative_without_required_parameters()
     {
-        $request = new UserSiteRequest();
         $validator = $this->createValidator([]);
 
         $this->assertFalse($validator->passes());
 
-        $errors = $validator->errors()->keys();
+        $actualKeys = $validator->errors()->keys();
 
-        $this->assertContains('name', $errors);
-        $this->assertContains('url', $errors);
-        $this->assertContains('address', $errors);
-        $this->assertContains('price_min', $errors);
-        $this->assertContains('price_max', $errors);
+        $this->assertContains('name', $actualKeys);
+        $this->assertContains('url', $actualKeys);
+        $this->assertContains('address', $actualKeys);
+        $this->assertContains('price_min', $actualKeys);
+        $this->assertContains('price_max', $actualKeys);
 
         // 含まれてはいけないキーが存在しないか
         $expectedKeys = ['name', 'url', 'address', 'price_min', 'price_max'];
-        $actualKeys = $validator->errors()->keys();
         $this->assertEqualsCanonicalizing($expectedKeys, $actualKeys);
 
         dump($validator->errors()->all());
@@ -97,7 +93,6 @@ class UserSiteRequestTest extends TestCase
 
     public function testNegative_with_empty()
     {
-        $request = new UserSiteRequest();
         $validator = $this->createValidator([
             'name' => '',
             'url' => '',
@@ -110,15 +105,14 @@ class UserSiteRequestTest extends TestCase
 
         $this->assertFalse($validator->passes());
 
-        $errors = $validator->errors()->keys();
+        $actualKeys = $validator->errors()->keys();
 
-        $this->assertContains('name', $errors);
-        $this->assertContains('url', $errors);
-        $this->assertContains('address', $errors);
+        $this->assertContains('name', $actualKeys);
+        $this->assertContains('url', $actualKeys);
+        $this->assertContains('address', $actualKeys);
 
         // 含まれてはいけないキーが存在しないか
         $expectedKeys = ['name', 'url', 'address'];
-        $actualKeys = $validator->errors()->keys();
         $this->assertEqualsCanonicalizing($expectedKeys, $actualKeys);
 
         dump($validator->errors()->all());
@@ -126,7 +120,6 @@ class UserSiteRequestTest extends TestCase
 
     public function testNegative_with_only_space()
     {
-        $request = new UserSiteRequest();
         $validator = $this->createValidator([
             'name' => str_repeat(' ', 100),
             'url' => str_repeat(' ', 8000),
@@ -139,15 +132,14 @@ class UserSiteRequestTest extends TestCase
 
         $this->assertFalse($validator->passes());
 
-        $errors = $validator->errors()->keys();
+        $actualKeys = $validator->errors()->keys();
 
-        $this->assertContains('name', $errors);
-        $this->assertContains('url', $errors);
-        $this->assertContains('address', $errors);
+        $this->assertContains('name', $actualKeys);
+        $this->assertContains('url', $actualKeys);
+        $this->assertContains('address', $actualKeys);
 
         // 含まれてはいけないキーが存在しないか
         $expectedKeys = ['name', 'url', 'address'];
-        $actualKeys = $validator->errors()->keys();
         $this->assertEqualsCanonicalizing($expectedKeys, $actualKeys);
 
         dump($validator->errors()->all());
@@ -155,7 +147,6 @@ class UserSiteRequestTest extends TestCase
 
     public function testNegative_with_smaller_values()
     {
-        $request = new UserSiteRequest();
         $validator = $this->createValidator([
             'name' => 'テストサイト',
             'url' => 'https://example.com',
@@ -168,14 +159,13 @@ class UserSiteRequestTest extends TestCase
 
         $this->assertFalse($validator->passes());
 
-        $errors = $validator->errors()->keys();
+        $actualKeys = $validator->errors()->keys();
 
-        $this->assertContains('price_min', $errors);
-        $this->assertContains('price_max', $errors);
+        $this->assertContains('price_min', $actualKeys);
+        $this->assertContains('price_max', $actualKeys);
 
         // 含まれてはいけないキーが存在しないか
         $expectedKeys = ['price_min', 'price_max'];
-        $actualKeys = $validator->errors()->keys();
         $this->assertEqualsCanonicalizing($expectedKeys, $actualKeys);
 
         dump($validator->errors()->all());
@@ -188,7 +178,6 @@ class UserSiteRequestTest extends TestCase
         $imageService = new ImageService();
         $base64 = $imageService->encode($image);
 
-        $request = new UserSiteRequest();
         $validator = $this->createValidator([
             'name' => str_repeat('あ', 101),
             'url' => 'https://example.com/' . str_repeat('a', 8000 - Str::length('https://example.com/') + 1),
@@ -201,19 +190,18 @@ class UserSiteRequestTest extends TestCase
 
         $this->assertFalse($validator->passes());
 
-        $errors = $validator->errors()->keys();
+        $actualKeys = $validator->errors()->keys();
 
-        $this->assertContains('name', $errors);
-        $this->assertContains('url', $errors);
-        $this->assertContains('address', $errors);
-        $this->assertContains('description', $errors);
-        $this->assertContains('thumbnail', $errors);
-        $this->assertContains('price_min', $errors);
-        $this->assertContains('price_max', $errors);
+        $this->assertContains('name', $actualKeys);
+        $this->assertContains('url', $actualKeys);
+        $this->assertContains('address', $actualKeys);
+        $this->assertContains('description', $actualKeys);
+        $this->assertContains('thumbnail', $actualKeys);
+        $this->assertContains('price_min', $actualKeys);
+        $this->assertContains('price_max', $actualKeys);
 
         // 含まれてはいけないキーが存在しないか
         $expectedKeys = ['name', 'url', 'address', 'description', 'thumbnail', 'price_min', 'price_max'];
-        $actualKeys = $validator->errors()->keys();
         $this->assertEqualsCanonicalizing($expectedKeys, $actualKeys);
 
         dump($validator->errors()->all());
@@ -221,7 +209,6 @@ class UserSiteRequestTest extends TestCase
 
     public function testNegative_with_invalid_thumbnail_extension()
     {
-        $request = new UserSiteRequest();
         $validator = $this->createValidator([
             'name' => 'テストサイト',
             'url' => 'https://example.com',
@@ -234,13 +221,12 @@ class UserSiteRequestTest extends TestCase
 
         $this->assertFalse($validator->passes());
 
-        $errors = $validator->errors()->keys();
+        $actualKeys = $validator->errors()->keys();
 
-        $this->assertContains('thumbnail', $errors);
+        $this->assertContains('thumbnail', $actualKeys);
 
         // 含まれてはいけないキーが存在しないか
         $expectedKeys = ['thumbnail'];
-        $actualKeys = $validator->errors()->keys();
         $this->assertEqualsCanonicalizing($expectedKeys, $actualKeys);
 
         dump($validator->errors()->all());
@@ -248,7 +234,6 @@ class UserSiteRequestTest extends TestCase
 
     public function testNegative_with_multiple_conditions()
     {
-        $request = new UserSiteRequest();
         $validator = $this->createValidator([
             'name' => 'テストサイト',
             'url' => 'https://example.com',
@@ -261,13 +246,12 @@ class UserSiteRequestTest extends TestCase
 
         $this->assertFalse($validator->passes());
 
-        $errors = $validator->errors()->keys();
+        $actualKeys = $validator->errors()->keys();
 
-        $this->assertContains('price_max', $errors);
+        $this->assertContains('price_max', $actualKeys);
 
         // 含まれてはいけないキーが存在しないか
         $expectedKeys = ['price_max'];
-        $actualKeys = $validator->errors()->keys();
         $this->assertEqualsCanonicalizing($expectedKeys, $actualKeys);
 
         dump($validator->errors()->all());

@@ -14,6 +14,8 @@ class SearchRequest extends BaseRequest
             'per_page' => ['nullable', 'integer', 'between:1,50'],
             'keyword' => ['nullable', 'string'],
             'sort' => ['nullable', 'in:price_min_asc,updated_at_desc'],
+            'budget_min' => ['nullable', 'integer', 'min:1', 'max:100000000'],
+            'budget_max' => ['nullable', 'integer', 'min:1', 'max:100000000'],
         ];
     }
 
@@ -24,6 +26,8 @@ class SearchRequest extends BaseRequest
             'per_page' => __('pagination.per_page'),
             'keyword' => __('project.keyword'),
             'sort' => __('project.sort'),
+            'budget_min' =>  __('project.budget_min'),
+            'budget_max' =>  __('project.budget_max'),
         ];
     }
 }
